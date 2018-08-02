@@ -1,3 +1,5 @@
+'use strict';
+
 let PropertyController = require("../../controllers/properties.controller");
 let Property = require("../../models/property.model");
 let _ = require("lodash");

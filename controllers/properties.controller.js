@@ -1,3 +1,5 @@
+`use strict`;
+
 const Property = require('../models/property.model');
 
 module.exports = class PropertyController {
