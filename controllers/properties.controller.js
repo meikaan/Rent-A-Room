@@ -1,35 +1,14 @@
 const Property = require('../models/property.model');
 
-//module.exports = class PropertyController {
+module.exports = class PropertyController {
 
-	//create(params) {
-		//return Property.create(params);
-		// return Promise.resolve();
-	//}
-//}
+	create(params) {
+        let data = params.body;
+		return Property.create(data);
+	}
 
 
-exports.property_create = function (req, res) {
-    let property = new Property(
-        {
-            name: req.body.name,
-            description: req.body.description,
-            price: req.body.price,
-            address: req.body.address,
-            latitude: req.body.latitude,
-            longitude: req.body.longitude,
-            rules: req.body.rules,
-            minimum_days: req.body.minimum_days,
-        }
-    );
-
-    property.save(function (err) {
-        if (err) {
-            return next(err);
-        }
-        res.send('Property Created successfully')
-    })
-};
+}
 
 exports.property_details = function (req, res) {
     Property.findById(req.params.id, function (err, property) {

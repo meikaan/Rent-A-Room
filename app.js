@@ -24,13 +24,3 @@ var port = 3000;
 app.listen(port, () => {
     console.log('Server is up and running on port number ' + port);
 });
-
-//app.get('/', function(req, res, next) {
-	//var Property = require("./models/property.model");
-	//console.log(Property);
-	//Property.find({}).then(result => {
-		//console.log(result);
-		//res.send(result);
-	//});
-	// res.send({ title: 'Rent-A-Room App' });
-//});
