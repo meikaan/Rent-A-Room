@@ -1,4 +1,4 @@
-`use strict`;
+'use strict';
 
 const Property = require('../models/property.model');
 
