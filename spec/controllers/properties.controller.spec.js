@@ -89,5 +89,37 @@ describe("PropertiesController", () => {
 				});
 			})
 		})
+
+
+		it("should create property if field length is less than specified limit", ()=> {
+			let validData = {
+				name: "Paradise",
+				description: "Luxury hotel with swimming pools",
+				price: 4000,
+				latitude: 12334,
+				longitude: 3444,
+				address: "12, some street, city"
+			};
+
+			let propertyController = new PropertyController();
+			
+			let fieldsLength = {
+				name: 50,
+				description: 300,
+				price: 5,
+				latitude: 20,
+				longitude: 20,
+				address: 250
+			};
+			
+			return propertyController.create({ body: validData }).then(result => {
+				return Property.findOne(validData).then(validData => {
+					_.each(fieldsLength, (value, key) => {
+						 expect(validData[key].toString.length).toBeLessThan(value);
+					})
+				});
+			});			
+		})
+
 	})
 })

@@ -39,4 +39,3 @@ exports.properties = function (req, res) {
         res.send(property);
     })
 };
-

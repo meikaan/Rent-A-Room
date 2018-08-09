@@ -1,9 +1,10 @@
 
 var express = require('express');
 var bodyParser = require('body-parser');
+var app = express();
 
 const property = require('./routes/property.route');
-var app = express();
+
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/rentaroom');
