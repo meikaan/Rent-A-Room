@@ -13,12 +13,13 @@
     "express": "^4.16.3",
     "http-errors": "~1.6.2",
     "lodash": "^4.17.10",
-    "mongoose": "^5.2.6",
+    "mongoose": "^5.2.7",
     "morgan": "~1.9.0",
     "pug": "2.0.0-beta11"
   },
   "devDependencies": {
-    "jasmine": "^3.1.0"
+    "babel-preset-env": "^1.7.0",
+    "jasmine": "^3.2.0"
   },
   "main": "app.js",
   "directories": {

@@ -4,29 +4,31 @@ const Property = require('../models/property.model');
 
 module.exports = class PropertyController {
 
-    create(params) {
-        let property = params.body;
-		return Property.create(property);
-	}
-
-    index(params) {
-        let properties = Property.find({});
-        return properties;
+    create(req, res) {
+        return Property.create(req.body).then(result => res.send(result));
     }
 
-    read(params) {
-        let property = Property.findById(params.id);
-        return property;
+    index(req, res) {
+        return Property.find({})
+            .then(result => {
+                res.send(result);
+            });
     }
 
-    delete(params) {
-        let property = Property.findByIdAndRemove(params.id);
-        return property;
+    read(req, res) {
+        return Property.findById(req.params.id)
+            .then(result => res.send(result));
     }
 
-    update(params) {
-        let property = Property.findByIdAndUpdate(params.id, {$set: params.body});
-        return property;
+    delete(req, res) {
+        return Property.findByIdAndRemove(req.params.id)
+            .then(result => res.send(result));
+    }
+
+    update(req, res) {
+        //TODO: Figure out how to send the updated result in the promise resolution
+        return Property.findByIdAndUpdate({_id: req.params.id}, {$set: req.body})
+            .then(result => res.send(result));
     }
 }
 

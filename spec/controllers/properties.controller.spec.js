@@ -7,8 +7,11 @@ let _ = require("lodash");
 let mongoose = require('mongoose');
 let connection = mongoose.connect('mongodb://localhost/rentaroom_test');
 
+
 describe("PropertiesController", () => {
+	let res = { send: function() {}};
 	beforeEach(() => {
+		spyOn(res, 'send').and.stub();
 		return mongoose.connection.dropDatabase();
 	})
 	describe("Create", ()=> {
@@ -28,7 +31,8 @@ describe("PropertiesController", () => {
 			
 			let newProperty = {};
 			
-			return propertyController.create({ body: validData }).then(result => {
+			return propertyController.create({ body: validData }, res).then(result => {
+				expect(res.send).toHaveBeenCalledTimes(1);
 				return Property.findOne(validData).then(newProperty => {
 					_.each(validData, (validValue, currentKey) => {
 						expect(newProperty[currentKey]).toEqual(validValue);
@@ -52,7 +56,7 @@ describe("PropertiesController", () => {
 			
 			let newProperty = {};
 			
-			return propertyController.create({ body: validData }).then(result => {
+			return propertyController.create({ body: validData }, res).then(result => {
 				return Property.findOne(validData).then(newProperty => {
 					_.each(validData, (validValue, currentKey) => {
 						expect(newProperty[currentKey]).toEqual(validValue);
@@ -81,7 +85,7 @@ describe("PropertiesController", () => {
 				
 				let newProperty = {};
 				
-				return propertyController.create({ body: invalidData }).then(result => {
+				return propertyController.create({ body: invalidData }, res).then(result => {
 					fail("create shouldn't pass");
 				}).catch(e => {
 					expect(e.name).toEqual("ValidationError");
@@ -112,7 +116,7 @@ describe("PropertiesController", () => {
 				address: 250
 			};
 			
-			return propertyController.create({ body: validData }).then(result => {
+			return propertyController.create({ body: validData }, res).then(result => {
 				return Property.findOne(validData).then(validData => {
 					_.each(fieldsLength, (value, key) => {
 						 expect(validData[key].toString.length).toBeLessThan(value);
@@ -122,4 +126,20 @@ describe("PropertiesController", () => {
 		})
 
 	})
+
+	describe("Read", ()=> {
+        xit("should find property by id", () => {
+			let validData = {
+				name: "Paradise",
+				description: "Luxury hotel with swimming pools",
+				price: 4000,
+				latitude: 12334,
+				longitude: 3444,
+				address: "12, some street, city",
+				rules: "Do this and don't do that",
+				minimum_days: 2 
+			};
+
+		})
+    })
 })
