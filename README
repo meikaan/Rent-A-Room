@@ -2,4 +2,14 @@
 
 Booking app
 
+**Setup Instructions**
 
+```
+npm install
+```
+
+To run the server
+
+```
+npm start
+```
