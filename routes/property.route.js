@@ -5,10 +5,10 @@ const PropertiesController = require('../controllers/properties.controller');
 
 let propertyController = new PropertiesController();
 
-router.post('/', propertyController.create);
-router.get('/:id', propertyController.read);
-router.put('/:id', propertyController.update);
-router.delete('/:id', propertyController.delete);
-router.get('/', propertyController.index);
+router.post('/', (...args) => propertyController.create(...args));
+router.get('/:id', (...args) => propertyController.read(...args));
+router.put('/:id', (...args) => propertyController.update(...args));
+router.delete('/:id', (...args) => propertyController.delete(...args));
+router.get('/', (...args) => propertyController.index(...args));
 
 module.exports = router;
