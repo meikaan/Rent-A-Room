@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var app = express();
 
 const property = require('./routes/property.route');
-
+const amenity = require('./routes/amenity.route');
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/rentaroom');
@@ -19,6 +19,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/properties', property);
+app.use('/amenities', amenity);
 
 var port = 3000;
 
