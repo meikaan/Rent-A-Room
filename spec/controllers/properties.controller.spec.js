@@ -13,7 +13,7 @@ describe("PropertiesController", () => {
 	beforeEach(() => {
 		spyOn(res, 'send').and.stub();
 		return mongoose.connection.dropDatabase();
-	})
+	});
 	describe("Create", ()=> {
 		it("should create property with all the fields", () => {
 			let validData = {
@@ -36,11 +36,11 @@ describe("PropertiesController", () => {
 				return Property.findOne(validData).then(newProperty => {
 					_.each(validData, (validValue, currentKey) => {
 						expect(newProperty[currentKey]).toEqual(validValue);
-					})
+					});
 				});
 			});
 
-		})
+		});
 
 		it("should create property with only the mandatory fields", ()=> {
 			let validData = {
@@ -60,10 +60,10 @@ describe("PropertiesController", () => {
 				return Property.findOne(validData).then(newProperty => {
 					_.each(validData, (validValue, currentKey) => {
 						expect(newProperty[currentKey]).toEqual(validValue);
-					})
+					});
 				});
 			});			
-		})
+		});
 
 
 		const mandatoryFields = ["name", "description", "price", "latitude", "longitude", "address"];
@@ -91,8 +91,8 @@ describe("PropertiesController", () => {
 					expect(e.name).toEqual("ValidationError");
 					expect(e.errors[field].message).toEqual(`Path \`${field}\` is required.`)
 				});
-			})
-		})
+			});
+		});
 
 
 		it("should create property if field length is less than specified limit", ()=> {
@@ -120,26 +120,26 @@ describe("PropertiesController", () => {
 				return Property.findOne(validData).then(validData => {
 					_.each(fieldsLength, (value, key) => {
 						 expect(validData[key].toString.length).toBeLessThan(value);
-					})
+					});
 				});
 			});			
-		})
+		});
 
-	})
+	});
 
-	describe("Read", ()=> {
-        xit("should find property by id", () => {
-			let validData = {
-				name: "Paradise",
-				description: "Luxury hotel with swimming pools",
-				price: 4000,
-				latitude: 12334,
-				longitude: 3444,
-				address: "12, some street, city",
-				rules: "Do this and don't do that",
-				minimum_days: 2 
-			};
+	// describe("Read", ()=> {
+ //        xit("should find property by id", () => {
+	// 		let validData = {
+	// 			name: "Paradise",
+	// 			description: "Luxury hotel with swimming pools",
+	// 			price: 4000,
+	// 			latitude: 12334,
+	// 			longitude: 3444,
+	// 			address: "12, some street, city",
+	// 			rules: "Do this and don't do that",
+	// 			minimum_days: 2 
+	// 		};
 
-		})
-    })
-})
+	// 	})
+ //    })
+});
