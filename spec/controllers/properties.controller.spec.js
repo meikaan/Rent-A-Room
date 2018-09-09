@@ -127,19 +127,19 @@ describe("PropertiesController", () => {
 
 	});
 
-	// describe("Read", ()=> {
- //        xit("should find property by id", () => {
-	// 		let validData = {
-	// 			name: "Paradise",
-	// 			description: "Luxury hotel with swimming pools",
-	// 			price: 4000,
-	// 			latitude: 12334,
-	// 			longitude: 3444,
-	// 			address: "12, some street, city",
-	// 			rules: "Do this and don't do that",
-	// 			minimum_days: 2 
-	// 		};
+	describe("Read", ()=> {
+        xit("should find property by id", () => {
+			let validData = {
+				name: "Paradise",
+				description: "Luxury hotel with swimming pools",
+				price: 4000,
+				latitude: 12334,
+				longitude: 3444,
+				address: "12, some street, city",
+				rules: "Do this and don't do that",
+				minimum_days: 2 
+			};
 
-	// 	})
- //    })
+		})
+    })
 });

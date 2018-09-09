@@ -4,6 +4,7 @@ let AmenityController = require("../../controllers/amenities.controller");
 let Amenity = require("../../models/amenity.model");
 let _ = require("lodash");
 
+
 let mongoose = require('mongoose');
 let connection = mongoose.connect('mongodb://localhost/rentaroom_test');
 
@@ -11,7 +12,7 @@ let connection = mongoose.connect('mongodb://localhost/rentaroom_test');
 describe("AmenitiesController", () => {
 	let res = { send: function() {}};
 	beforeEach(() => {
-		spyOn(res, 'send').and.stub();
+		spyOn(res, 'send'); //.and.stub();
 		return mongoose.connection.dropDatabase();
 	});
 	describe("Create", ()=> {
@@ -106,19 +107,39 @@ describe("AmenitiesController", () => {
 	});
 
 	describe("Read", ()=> {
-        xit("should find amenity by id", () => {
-			let validData = {
-				name: "Pool",
-				description: "Outdoor pool with towels"
-			};
-
+		let data = {id: 123, name: 'Pool'};
+		beforeEach(() => {
+		    spyOn(Amenity, 'findById').and.returnValue(Promise.resolve(data));
+		});
+        it("should find amenity by id", () => {
 			let amenityController = new AmenityController();
-            
-			return amenityController.read({ }, res);
+            //console.log(validData.id);
+			//return Amenity.create(validData).then(result => {
+				return amenityController.read({params:{id: data.id}}, res).then(result => { 
+					expect(Amenity.findById).toHaveBeenCalledWith(data.id);
+					expect(res.send).toHaveBeenCalledWith(data);
+				});
+			//});
+		});
+	});
 
+
+    describe("Index", ()=> {
+    	let data = {id: 123, name: 'Pool'};
+        beforeEach(() => {
+		    spyOn(Amenity, 'find').and.returnValue(Promise.resolve(data));
+		});
+
+        it("should find all amenity", () => {
+			let amenityController = new AmenityController();
+            return amenityController.index({}, res).then(result => { 
+				expect(Amenity.find).toHaveBeenCalledTimes(1);
+				expect(res.send).toHaveBeenCalledWith(data);
+					
+			});
 		});
 
     });
 
-
+    
 });

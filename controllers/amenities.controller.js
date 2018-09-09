@@ -15,8 +15,9 @@ module.exports = class AmenityController {
     }
 
     read(req, res) {
+        //console.log(req);
         return Amenity.findById(req.params.id)
-            .then(result => res.send(result));
+            .then(result => {res.send(result)});
     }
 
     delete(req, res) {
