@@ -98,7 +98,7 @@ describe("AmenitiesController", () => {
 			return amenityController.create({ body: validData }, res).then(result => {
 				return Amenity.findOne(validData).then(validData => {
 					_.each(fieldsLength, (value, key) => {
-						 expect(validData[key].toString.length).toBeLessThan(value);
+						expect(validData[key].toString.length).toBeLessThan(value);
 					});
 				});
 			});			
@@ -107,11 +107,11 @@ describe("AmenitiesController", () => {
 	});
 
 	describe("Read", ()=> {
-		let data = {id: 123, name: 'Pool'};
+		let data = {id: 123, name: 'Pool', description: 'Outdoor pool with towels'};
 		beforeEach(() => {
-		    spyOn(Amenity, 'findById').and.returnValue(Promise.resolve(data));
+			spyOn(Amenity, 'findById').and.returnValue(Promise.resolve(data));
 		});
-        it("should find amenity by id", () => {
+		it("should find amenity by id", () => {
 			let amenityController = new AmenityController();
             //console.log(validData.id);
 			//return Amenity.create(validData).then(result => {
@@ -124,22 +124,59 @@ describe("AmenitiesController", () => {
 	});
 
 
-    describe("Index", ()=> {
-    	let data = {id: 123, name: 'Pool'};
-        beforeEach(() => {
-		    spyOn(Amenity, 'find').and.returnValue(Promise.resolve(data));
+	describe("Index", ()=> {
+		let data = {id: 123, name: 'Pool', description: 'Outdoor pool with towels'};
+		beforeEach(() => {
+			spyOn(Amenity, 'find').and.returnValue(Promise.resolve(data));
 		});
 
-        it("should find all amenity", () => {
+		it("should find all amenity", () => {
 			let amenityController = new AmenityController();
-            return amenityController.index({}, res).then(result => { 
+			return amenityController.index({}, res).then(result => { 
 				expect(Amenity.find).toHaveBeenCalledTimes(1);
 				expect(res.send).toHaveBeenCalledWith(data);
-					
+
 			});
 		});
 
-    });
+	});
 
-    
+	describe("Delete", ()=> {
+		let data = {id: 123, name: 'Pool', description: 'Outdoor pool with towels'};
+		beforeEach(() => {
+			spyOn(Amenity, 'findByIdAndRemove').and.returnValue(Promise.resolve(data));
+		});
+
+		it("should delete amenity", () => {
+			let amenityController = new AmenityController();
+			return amenityController.delete({params:{id: data.id}}, res).then(result => { 
+				expect(Amenity.findByIdAndRemove).toHaveBeenCalledWith(data.id);
+				expect(res.send).toHaveBeenCalledWith(data);
+
+			});
+		});
+
+	});
+
+	describe("Update", ()=> {
+		let data = {name: 'Pool', description: 'Outdoor pool with towels'};
+		// beforeEach(() => {
+		// 	spyOn(Amenity, 'findByIdAndUpdate').and.returnValue(Promise.resolve(data));
+		// });
+
+		it("should update amenity", () => {
+			let amenityController = new AmenityController();
+
+			return Amenity.create(data).then(newAmenity => {
+				return amenityController.update({params:{id: newAmenity.id}, body: {name: 'Corridor'}}, res).then(_ => {
+					Amenity.findById(newAmenity.id).then(updatedAmenity => {
+						//console.log(updatedAmenity);
+						expect(updatedAmenity.name).toEqual('Corridor');
+					});
+				});
+			});
+			
+		});
+	});
+
 });

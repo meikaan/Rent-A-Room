@@ -15,7 +15,6 @@ module.exports = class AmenityController {
     }
 
     read(req, res) {
-        //console.log(req);
         return Amenity.findById(req.params.id)
             .then(result => {res.send(result)});
     }
@@ -26,16 +25,19 @@ module.exports = class AmenityController {
     }
 
     _update(id, data) {
+        //console.log(data);
         return Amenity.findByIdAndUpdate(id, {$set: data})
             .then(result => {
                     return Amenity.findById(id).then(amenity => {
+                       // console.log(amenity);
                         return amenity;
                     })
                 })
     }
 
     update(req, res) {
-        this._update(req.params.id, req.body).then(updatedAmenity => {
+        //console.log(req);
+        return this._update(req.params.id, req.body).then(updatedAmenity => {
             res.send(updatedAmenity);
         });
     }
