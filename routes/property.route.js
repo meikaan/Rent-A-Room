@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-
-const Property = require('../models/property.model');
 const PropertiesController = require('../controllers/properties.controller');
-let propertyController = new PropertiesController(Property);
+
+let propertyController = new PropertiesController();
 
 router.post('/', (...args) => propertyController.create(...args));
 router.get('/:id', (...args) => propertyController.read(...args));

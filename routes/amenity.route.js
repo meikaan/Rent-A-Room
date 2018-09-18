@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-
-const Amenity = require('../models/amenity.model');
 const AmenitiesController = require('../controllers/amenities.controller');
-let amenityController = new AmenitiesController(Amenity);
+
+let amenityController = new AmenitiesController();
 
 router.post('/', (...args) => amenityController.create(...args));
 router.get('/:id', (...args) => amenityController.read(...args));
