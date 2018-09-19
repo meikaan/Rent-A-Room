@@ -70,7 +70,7 @@ describe("AmenitiesController", () => {
 
 				let amenityController = new AmenityController();
 				
-				let newAmenity = {};
+				//let newAmenity = {};
 				
 				return amenityController.create({ body: invalidData }, res).then(result => {
 					fail("create shouldn't pass");
@@ -124,7 +124,7 @@ describe("AmenitiesController", () => {
 	});
 
 
-	describe("Index", ()=> {
+	describe("All", ()=> {
 		let data = {id: 123, name: 'Pool', description: 'Outdoor pool with towels'};
 		beforeEach(() => {
 			spyOn(Amenity, 'find').and.returnValue(Promise.resolve(data));
@@ -132,7 +132,7 @@ describe("AmenitiesController", () => {
 
 		it("should find all amenity", () => {
 			let amenityController = new AmenityController();
-			return amenityController.index({}, res).then(result => { 
+			return amenityController.all({}, res).then(result => { 
 				expect(Amenity.find).toHaveBeenCalledTimes(1);
 				expect(res.send).toHaveBeenCalledWith(data);
 
