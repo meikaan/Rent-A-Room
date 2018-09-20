@@ -103,14 +103,26 @@ describe('SpecialPricesController', () => {
 
 		// 	return specialPricesController.create({body: data}, res).then(result => {
 		// 		return SpecialPrice.findOne(data).then(newSpecialPrice => {
-		// 			expect(newSpecialPrice["price"].toString().length).toEqual(0);
+		// 			expect(newSpecialPrice["price"]).toBeGreaterThan(0);
 		// 		});
-				
 		// 	});
 		// });
 
-		xit('should create record if price is numerical', () => {
+		it('should create record if price is numerical', () => {
 
+			let data = {
+				price: 1500,
+				startDate: new Date("2018-10-27"),
+				endDate: new Date("2018-10-30")
+			};
+
+			let specialPricesController = new SpecialPricesController();
+
+			return specialPricesController.create({body: data}, res).then(result => {
+				return SpecialPrice.findOne(data).then(newSpecialPrice => {
+					expect(typeof newSpecialPrice["price"]).toBe('number');
+				});
+			});
 		});
 
 		xit('should not create record if price is not numerical', () => {
