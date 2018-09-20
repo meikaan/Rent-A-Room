@@ -63,29 +63,51 @@ describe('SpecialPricesController', () => {
 			_.each(fields, (field, index) => {
 				delete invalidData[field];
 				return specialPricesController.create({ body: invalidData }, res).then(result => {
-				fail("create shouldn't pass");}).catch(e => {
+				    fail("create shouldn't pass");}).catch(e => {
 					expect(e.name).toEqual("ValidationError"); 
 					expect(e.errors[field].message).toEqual(`Path \`${field}\` is required.`);
+					//UnhandledPromiseRejectionWarning: ValidationError: SpecialPrice validation failed: price: Path `price` is required.
 				});
 			});
 
 		});
 
-		xit('should create record if field length is less than specified limit', () => {
+		it('should create record if price field length is less than specified limit', () => {
 
 			let data = {
-				price: 15000000,
+				price: 1500,
 				startDate: new Date("2018-10-27"),
 				endDate: new Date("2018-10-30")
 			};
 
 			let specialPricesController = new SpecialPricesController();
+
+			return specialPricesController.create({body: data}, res).then(result => {
+				return SpecialPrice.findOne(data).then(newSpecialPrice => {
+					expect(newSpecialPrice["price"].toString().length).toBeLessThanOrEqual(4);
+				});
+				
+			});
 					
 		});
 
-		xit('should not create record if field length is zero, greater than or equal to specified limit', () => {
+		// xit('should not create record if price field length is zero', () => {
 
-		});
+		// 	let data = {
+		// 		price: 0,
+		// 		startDate: new Date("2018-10-27"),
+		// 		endDate: new Date("2018-10-30")
+		// 	};
+
+		// 	let specialPricesController = new SpecialPricesController();
+
+		// 	return specialPricesController.create({body: data}, res).then(result => {
+		// 		return SpecialPrice.findOne(data).then(newSpecialPrice => {
+		// 			expect(newSpecialPrice["price"].toString().length).toEqual(0);
+		// 		});
+				
+		// 	});
+		// });
 
 		xit('should create record if price is numerical', () => {
 
