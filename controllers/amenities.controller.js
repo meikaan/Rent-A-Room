@@ -1,3 +1,4 @@
+'use strict';
 const Amenity = require('../models/amenity.model');
 const AbstractController = require('./abstract');
 

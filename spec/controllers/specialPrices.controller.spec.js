@@ -1,4 +1,4 @@
-'use strick';
+//'use strict';
 
 let _ = require("lodash");
 let mongoose = require('mongoose');
@@ -18,6 +18,15 @@ class SpecialPricesController{
         return SpecialPrice.create(req.body)
             .then(result => res.send(result));
     }
+}
+
+//Function to convert given date into mm/dd/yyyy format
+function formatDate(date) {
+    var givenDate = date;
+    var month = givenDate.getMonth() + 1;
+    var day = givenDate.getDate();
+    var year = givenDate.getFullYear();
+    return month + "/" + day + "/" + year;
 }
 
 describe('SpecialPricesController', () => {
@@ -69,7 +78,6 @@ describe('SpecialPricesController', () => {
 					//UnhandledPromiseRejectionWarning: ValidationError: SpecialPrice validation failed: price: Path `price` is required.
 				});
 			});
-
 		});
 
 		it('should create record if price field length is less than specified limit', () => {
@@ -86,27 +94,8 @@ describe('SpecialPricesController', () => {
 				return SpecialPrice.findOne(data).then(newSpecialPrice => {
 					expect(newSpecialPrice["price"].toString().length).toBeLessThanOrEqual(4);
 				});
-				
 			});
-					
 		});
-
-		// xit('should not create record if price field length is zero', () => {
-
-		// 	let data = {
-		// 		price: 0,
-		// 		startDate: new Date("2018-10-27"),
-		// 		endDate: new Date("2018-10-30")
-		// 	};
-
-		// 	let specialPricesController = new SpecialPricesController();
-
-		// 	return specialPricesController.create({body: data}, res).then(result => {
-		// 		return SpecialPrice.findOne(data).then(newSpecialPrice => {
-		// 			expect(newSpecialPrice["price"]).toBeGreaterThan(0);
-		// 		});
-		// 	});
-		// });
 
 		it('should create record if price is numerical', () => {
 
@@ -125,19 +114,50 @@ describe('SpecialPricesController', () => {
 			});
 		});
 
-		xit('should not create record if price is not numerical', () => {
+		it('should create record if startDate is less than endDate', () => {
+
+			let data = {
+				price: 1500,
+				startDate: new Date("2018-10-27"),
+				endDate: new Date("2018-10-30")
+			};
+
+			let specialPricesController = new SpecialPricesController();
+
+			return specialPricesController.create({body: data}, res).then(result => {
+				return SpecialPrice.findOne(data).then(newSpecialPrice => {
+					expect(newSpecialPrice["startDate"]).toBeLessThan(newSpecialPrice["endDate"]);
+				});
+			});
+		});
+
+		it('should create record if startDate and endDate format is MM/DD/YY', () => {
+
+			let data = {
+				price: 1500,
+				startDate: new Date("2018-10-27"),
+				endDate: new Date("2018-10-30")
+			};
+
+			let specialPricesController = new SpecialPricesController();
+
+			return specialPricesController.create({body: data}, res).then(result => {
+				return SpecialPrice.findOne(data).then(newSpecialPrice => {
+					expect(formatDate(newSpecialPrice["startDate"])).toEqual("10/27/2018");
+					expect(formatDate(newSpecialPrice["endDate"])).toEqual("10/30/2018");
+				});
+			});
+		});
+
+		it('should not create record if price is not numerical', () => {
 
 		});
 
-		xit('should create record if startDate is less than endDate', () => {
+		xit('should not create record if price field length is zero', () => {
 
 		});
-
+		
 		xit('should not create record if startDate is greater than or equals to endDate', () => {
-
-		});
-
-		xit('should create record if startDate and endDate format is MM/DD/YY', () => {
 
 		});
 

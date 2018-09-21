@@ -1,3 +1,4 @@
+'use strict';
 const Property = require('../models/property.model');
 const AbstractController = require('./abstract');
 
