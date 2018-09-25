@@ -35,10 +35,24 @@ function dateValidator(endDate){
 }
 
 class SpecialPricesController{
+	
 	create(req, res) {
         return SpecialPrice.create(req.body)
             .then(result => res.send(result));
     }
+
+    _update(id, data) {
+        return SpecialPrice.findByIdAndUpdate(id, {$set: data}, {runValidators: true})
+        	.then(result => { return SpecialPrice.findById(id)
+        		.then(object => { return object; }); 
+        	});
+    }
+
+    update(req, res) {
+        return this._update(req.params.id, req.body)
+        .then(updatedObject => { res.send(updatedObject); });
+    }
+
 }
 
 describe('SpecialPricesController', () => {
@@ -180,7 +194,7 @@ describe('SpecialPricesController', () => {
 			});
 		});
 		
-		it('should not create record if startDate is greater than or equals to endDate', () => {
+		it('should not create record if startDate is greater than or equal to endDate', () => {
 			
 			let data = {
 				price: 1500,
@@ -215,4 +229,106 @@ describe('SpecialPricesController', () => {
 			});
 		});
 	});
+	
+	describe('Update', () => {
+
+		it('should find record by id and update the record', () => {
+
+			let data = {
+				price: 1500,
+				startDate: "2018-10-27",
+				endDate: "2018-10-30"
+			};
+
+			let specialPricesController = new SpecialPricesController();
+
+			return SpecialPrice.create(data).then(newSpecialPrice => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {price: 2000}}, res).then(_ => {
+					SpecialPrice.findById(newSpecialPrice.id).then(updatedSpecialPrice => {
+						expect(updatedSpecialPrice.price).toEqual(2000);
+					});
+				});
+			});
+		});
+
+		it('should not update record if fields are empty', () => {
+
+			let data = {
+				price: 1500,
+				startDate: "2018-10-27",
+				endDate: "2018-10-30"
+			};
+
+			let specialPricesController = new SpecialPricesController();
+
+			return SpecialPrice.create(data).then(newSpecialPrice => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {price: ''}}, res).catch(e => {
+					expect(e.name).toEqual("ValidationError");
+					expect(e.errors["price"].message).toEqual("Path \`price\` is required.")
+				});
+			});
+		});
+
+		it('should not update record if price is less than specified limit', () => {
+
+			let data = {
+				price: 1500,
+				startDate: "2018-10-27",
+				endDate: "2018-10-30"
+			};
+
+			let specialPricesController = new SpecialPricesController();
+
+			return SpecialPrice.create(data).then(newSpecialPrice => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {price: 50}}, res).catch(e => {
+					expect(e.name).toEqual("ValidationError");
+					expect(e.errors["price"].message).toEqual(`Path \`price\` (${e.errors["price"].value}) is less than minimum allowed value (100).`);
+				});
+			});
+		});
+
+		it('should not update record if price is greater than specified limit', () => {
+
+			let data = {
+				price: 1500,
+				startDate: "2018-10-27",
+				endDate: "2018-10-30"
+			};
+
+			let specialPricesController = new SpecialPricesController();
+
+			return SpecialPrice.create(data).then(newSpecialPrice => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {price: 6000}}, res).catch(e => {
+					expect(e.name).toEqual("ValidationError");
+					expect(e.errors["price"].message).toEqual(`Path \`price\` (${e.errors["price"].value}) is more than maximum allowed value (5000).`);
+				});
+			});
+		});
+
+		xit('should error Record Not Found if id doesn’t match', () => {
+
+		});
+		
+		xit('should update record if price is numerical', () => {
+
+		});
+
+		xit('should not update record if price is not numerical', () => {
+
+		});
+
+		xit('should update record if startDate is less than endDate', () => {
+
+		});
+
+		xit('should not update record if startDate is greater than or equals to endDate', () => {
+
+		});
+
+		xit('should not update record if startDate and endDate are invalid', () => {
+
+		});
+
+	});
+
 });
