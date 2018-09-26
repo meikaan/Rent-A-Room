@@ -11,7 +11,7 @@ let SpecialPriceSchema = new Schema({
     	type: Number, 
     	required: true, 
     	min: 100,
-    	max: 5000,
+    	max: 5000
     	//Todo
     	//validate: {validator: Number.isInteger, message: '{VALUE} is not an integer'}
     },
@@ -27,7 +27,6 @@ let SpecialPriceSchema = new Schema({
 });
 
 const SpecialPrice = mongoose.model('SpecialPrice', SpecialPriceSchema);
-
 // function that validate the startDate and endDate
 function dateValidator(endDate){
 	// `this` is the mongoose document
@@ -35,24 +34,20 @@ function dateValidator(endDate){
 }
 
 class SpecialPricesController{
-	
 	create(req, res) {
         return SpecialPrice.create(req.body)
             .then(result => res.send(result));
     }
-
-    _update(id, data) {
+	_update(id, data) {
         return SpecialPrice.findByIdAndUpdate(id, {$set: data}, {runValidators: true})
         	.then(result => { return SpecialPrice.findById(id)
         		.then(object => { return object; }); 
         	});
     }
-
-    update(req, res) {
+	update(req, res) {
         return this._update(req.params.id, req.body)
         .then(updatedObject => { res.send(updatedObject); });
     }
-
 }
 
 describe('SpecialPricesController', () => {
@@ -232,13 +227,13 @@ describe('SpecialPricesController', () => {
 	
 	describe('Update', () => {
 
-		it('should find record by id and update the record', () => {
-
-			let data = {
+		let data = {
 				price: 1500,
 				startDate: "2018-10-27",
 				endDate: "2018-10-30"
 			};
+
+		it('should find record by id and update the record', () => {
 
 			let specialPricesController = new SpecialPricesController();
 
@@ -253,12 +248,6 @@ describe('SpecialPricesController', () => {
 
 		it('should not update record if fields are empty', () => {
 
-			let data = {
-				price: 1500,
-				startDate: "2018-10-27",
-				endDate: "2018-10-30"
-			};
-
 			let specialPricesController = new SpecialPricesController();
 
 			return SpecialPrice.create(data).then(newSpecialPrice => {
@@ -270,12 +259,6 @@ describe('SpecialPricesController', () => {
 		});
 
 		it('should not update record if price is less than specified limit', () => {
-
-			let data = {
-				price: 1500,
-				startDate: "2018-10-27",
-				endDate: "2018-10-30"
-			};
 
 			let specialPricesController = new SpecialPricesController();
 
@@ -289,12 +272,6 @@ describe('SpecialPricesController', () => {
 
 		it('should not update record if price is greater than specified limit', () => {
 
-			let data = {
-				price: 1500,
-				startDate: "2018-10-27",
-				endDate: "2018-10-30"
-			};
-
 			let specialPricesController = new SpecialPricesController();
 
 			return SpecialPrice.create(data).then(newSpecialPrice => {
@@ -305,28 +282,77 @@ describe('SpecialPricesController', () => {
 			});
 		});
 
-		xit('should error Record Not Found if id doesn’t match', () => {
+		it('should update record if price is numerical', () => {
 
+			let specialPricesController = new SpecialPricesController();
+
+			return SpecialPrice.create(data).then(newSpecialPrice => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {price: 2000}}, res).then(_ => {
+					SpecialPrice.findById(newSpecialPrice.id).then(updatedSpecialPrice => {
+						expect(typeof updatedSpecialPrice.price).toEqual('number');
+					});
+				});
+			});
 		});
-		
-		xit('should update record if price is numerical', () => {
 
+		it('should not update record if price is not numerical', () => {
+
+			let specialPricesController = new SpecialPricesController();
+
+			return SpecialPrice.create(data).then(newSpecialPrice => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {price: "xyz"}}, res).catch(e => {
+					expect(e.name).toEqual('CastError');
+					expect(e.message).toEqual(`Cast to number failed for value "${e.value}" at path "${e.path}"`);
+				});
+			});
 		});
 
-		xit('should not update record if price is not numerical', () => {
+		it('should not update record if startDate and endDate are invalid', () => {
 
+			let specialPricesController = new SpecialPricesController();
+
+			return SpecialPrice.create(data).then(newSpecialPrice => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {startDate: "xyz", endDate: "abc"}}, res).catch(e => {
+					expect(e.name).toEqual('CastError');
+					expect(e.message).toEqual(`Cast to date failed for value "${e.value}" at path "${e.path}"`);
+				});
+			});
 		});
 
 		xit('should update record if startDate is less than endDate', () => {
 
+			let specialPricesController = new SpecialPricesController();
+
+			return SpecialPrice.create(data).then(newSpecialPrice => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {startDate: '2018-07-12', endDate: '2018-07-14'}}, res).then(_ => {
+					SpecialPrice.findById(newSpecialPrice.id).then(updatedSpecialPrice => {
+						expect(updatedSpecialPrice.startDate).toBeLessThan(updatedSpecialPrice.endDate);
+					});
+				});
+			});
 		});
 
 		xit('should not update record if startDate is greater than or equals to endDate', () => {
 
+			let specialPricesController = new SpecialPricesController();
+
+			return SpecialPrice.create(data).then(newSpecialPrice => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {startDate: '2018-10-30'}}, res).catch(e => { 
+					expect(e.name).toEqual("ValidationError"); 
+					expect(e.errors["endDate"].message).toEqual('startDate must be less than endDate');
+			});
 		});
 
-		xit('should not update record if startDate and endDate are invalid', () => {
+		it('should return null if id does not match', () => {
 
+			let specialPricesController = new SpecialPricesController();
+
+			return SpecialPrice.create(data).then(newSpecialPrice => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {price: 2000}}, res).then(_ => {SpecialPrice.findById("34sdfsf323ds").then(updatedSpecialPrice => {
+							expect(updatedSpecialPrice).toBe(null);
+						});
+					});
+			});
 		});
 
 	});
