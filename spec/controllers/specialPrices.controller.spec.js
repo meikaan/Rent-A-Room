@@ -33,13 +33,15 @@ function dateValidator(endDate){
 	return this.startDate < endDate;
 }
 
+var options = { runValidators: true, context: 'query' };
+
 class SpecialPricesController{
 	create(req, res) {
         return SpecialPrice.create(req.body)
             .then(result => { res.send(result); });
     }
 	_update(id, data) {
-        return SpecialPrice.findByIdAndUpdate(id, {$set: data}, {runValidators: true})
+        return SpecialPrice.findByIdAndUpdate(id, {$set: data}, options)
         	.then(result => { return SpecialPrice.findById(id)
         		.then(object => { return object; }); 
         	});
@@ -331,12 +333,12 @@ describe('SpecialPricesController', () => {
 			});
 		});
 
-		xit('should update record if startDate is less than endDate', () => {
+		it('should update record if startDate is less than endDate', () => {
 
 			let specialPricesController = new SpecialPricesController();
 
 			return SpecialPrice.create(data).then(newSpecialPrice => {
-				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {startDate: '2018-07-12', endDate: '2018-07-14'}}, res).then(_ => {
+				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {startDate: '2018-10-22'}}, res).then(_ => {
 					SpecialPrice.findById(newSpecialPrice.id).then(updatedSpecialPrice => {
 						expect(updatedSpecialPrice.startDate).toBeLessThan(updatedSpecialPrice.endDate);
 					});
@@ -344,12 +346,16 @@ describe('SpecialPricesController', () => {
 			});
 		});
 
-		xit('should not update record if startDate is greater than or equals to endDate', () => {
+		it('should not update record if startDate is greater than or equals to endDate', () => {
 
 			let specialPricesController = new SpecialPricesController();
 
 			return SpecialPrice.create(data).then(newSpecialPrice => {
-				return specialPricesController.update({params: {id: newSpecialPrice.id}, body: {endDate: '2018-10-24'}}, res);
+				return specialPricesController.update({params: {id: newSpecialPrice.id}, body: {endDate: '2018-10-24'}}, res)
+				.catch(e => {
+					expect(e.name).toEqual('ValidationError');
+					expect(e.errors["endDate"].message).toEqual('startDate must be less than endDate');
+				});
 			});
 		});
 
