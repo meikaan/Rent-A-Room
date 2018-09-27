@@ -36,7 +36,7 @@ function dateValidator(endDate){
 class SpecialPricesController{
 	create(req, res) {
         return SpecialPrice.create(req.body)
-            .then(result => res.send(result));
+            .then(result => { res.send(result); });
     }
 	_update(id, data) {
         return SpecialPrice.findByIdAndUpdate(id, {$set: data}, {runValidators: true})
@@ -46,7 +46,19 @@ class SpecialPricesController{
     }
 	update(req, res) {
         return this._update(req.params.id, req.body)
-        .then(updatedObject => { res.send(updatedObject); });
+        	.then(updatedObject => { res.send(updatedObject); });
+    }
+    read(req, res) {
+        return SpecialPrice.findById(req.params.id)
+            .then(result => { res.send(result); });
+    }
+    all(req, res) {
+    	return SpecialPrice.find({})
+    		.then(result => { res.send(result); });
+    }
+    delete(req, res) {
+    	return SpecialPrice.findByIdAndRemove(req.params.id)
+    		.then(result => { res.send(result); });
     }
 }
 
@@ -337,9 +349,7 @@ describe('SpecialPricesController', () => {
 			let specialPricesController = new SpecialPricesController();
 
 			return SpecialPrice.create(data).then(newSpecialPrice => {
-				return specialPricesController.update({params:{id: newSpecialPrice.id}, body: {startDate: '2018-10-30'}}, res).catch(e => { 
-					expect(e.name).toEqual("ValidationError"); 
-					expect(e.errors["endDate"].message).toEqual('startDate must be less than endDate');
+				return specialPricesController.update({params: {id: newSpecialPrice.id}, body: {endDate: '2018-10-24'}}, res);
 			});
 		});
 
@@ -355,6 +365,79 @@ describe('SpecialPricesController', () => {
 			});
 		});
 
+	});
+	
+	describe('Read', () => {
+
+		let data = {
+			id: 123, 
+			price: 1500, 
+			startDate: '2018-10-27', 
+			endDate: '2018-10-30'
+		};
+
+		beforeEach(() => {
+			spyOn(SpecialPrice, 'findById').and.returnValue(Promise.resolve(data));
+		});
+
+		it('should find record by id and return', () => {
+
+			let specialPricesController = new SpecialPricesController();
+
+         	return specialPricesController.read({params:{id: data.id}}, res).then(result => { 
+				expect(SpecialPrice.findById).toHaveBeenCalledWith(data.id);
+				expect(res.send).toHaveBeenCalledWith(data);
+			});
+		});
+
+	});
+
+	describe('All', () => {
+
+		let data = {
+			id: 123, 
+			price: 1500, 
+			startDate: '2018-10-27', 
+			endDate: '2018-10-30'
+		};
+
+		beforeEach(() => {
+			spyOn(SpecialPrice, 'find').and.returnValue(Promise.resolve(data));
+		});
+
+		it('should find all records and return them', () => {
+			
+			let specialPricesController = new SpecialPricesController();
+
+			return specialPricesController.all({}, res).then(result => { 
+				expect(SpecialPrice.find).toHaveBeenCalledTimes(1);
+				expect(res.send).toHaveBeenCalledWith(data);
+			});
+		});
+	});
+
+	describe('Delete', () => {
+
+		let data = {
+			id: 123, 
+			price: 1500, 
+			startDate: '2018-10-27', 
+			endDate: '2018-10-30'
+		};
+
+		beforeEach(() => {
+			spyOn(SpecialPrice, 'findByIdAndRemove').and.returnValue(Promise.resolve(data));
+		});
+
+		it('should find record by id and remove it', () => {
+
+			let specialPricesController = new SpecialPricesController();
+
+			return specialPricesController.delete({params: {id: data.id}}, res).then(result => {
+				expect(SpecialPrice.findByIdAndRemove).toHaveBeenCalledWith(data.id);
+				expect(res.send).toHaveBeenCalledWith(data);
+			});
+		});
 	});
 
 });
